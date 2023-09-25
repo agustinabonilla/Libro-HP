@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Información de libros</title>
+  <style>
+ 
+    body {
+      background-image: url('https://th.bing.com/th/id/R.be3c6f22d257fb1e349b2abe4624b860?rik=Df1KBdKMojgpUQ&pid=ImgRaw&r=0');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    link[rel="icon"] {
+      height: 32px;
+      width: 32px;
+    }
+    .container {
+      background-color: rgba(255, 255, 255, 0.7);
+      padding: 20px;
+      margin: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    }
+    .book {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+  <div class="container">
+    <h1>Explora el Mundo de las Palabras: Encuentra información sobre tu libro favorito</h1>
+    <div>
+      <label for="searchInput">Título o Palabras Clave:</label>
+      <input type="text" id="searchInput" placeholder="Ejemplo: Harry Potter">
+      <button onclick="searchBooks()">Buscar</button>
+    </div>
+    <div id="results"></div>
+  </div>
+
+  <script>
+    function handleResponse(response) {
+      var resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = ""; // Limpiar el contenido anterior
+
+      if (response.items && response.items.length > 0) {
+        for (var i = 0; i < response.items.length; i++) {
+          var item = response.items[i];
+          var title = item.volumeInfo.title;
+          var authors = item.volumeInfo.authors ? item.volumeInfo.authors.join(", ") : "Desconocido";
+          var description = item.volumeInfo.description || "Sin descripción disponible";
+
+          // Crear elementos para mostrar los detalles del libro
+          var bookDiv = document.createElement("div");
+          bookDiv.classList.add("book");
+
+          var titleElement = document.createElement("h2");
+          titleElement.textContent = title;
+
+          var authorsElement = document.createElement("p");
+          authorsElement.textContent = "Autor(es): " + authors;
+
+          var descriptionElement = document.createElement("p");
+          descriptionElement.textContent = "Descripción: " + description;
+
+          // Agregar elementos al div del libro
+          bookDiv.appendChild(titleElement);
+          bookDiv.appendChild(authorsElement);
+          bookDiv.appendChild(descriptionElement);
+
+          // Agregar el div del libro a los resultados
+          resultsDiv.appendChild(bookDiv);
+        }
+      } else {
+        resultsDiv.textContent = "No se encontraron resultados.";
+      }
+    }
+
+    function searchBooks() {
+      var searchInput = document.getElementById("searchInput").value;
+      var apiUrl = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchInput)}&maxResults=10`;
+
+      // Realizar una solicitud GET a la API de Google Books
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => handleResponse(data))
+        .catch(error => console.error("Error:", error));
+    }
+  </script>
+
+  <style>
+    /* Estilos simples para los resultados de los libros */
+    .book {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+  </style>
+</body>
+</html>
